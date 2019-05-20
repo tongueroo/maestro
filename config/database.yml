@@ -1,0 +1,27 @@
+<% client = Aws::SecretsManager::Client.new(region: 'us-east-1') %>
+<% puts "running database.yml #{Jets.env}" %>
+
+default: &default
+  adapter: postgresql
+  encoding: utf8
+
+  <% if Jets.env.development? %>
+    <% creds = JSON.parse(client.get_secret_value(secret_id: 'maestro/nonprod/dbcreds').secret_string) %>
+  <% else %>
+    <% creds = { :host => "localhost", :username => "thusharawijeratna", :password => "whatever", :database => "jetset", :pool => 5} %>
+  <% end %>
+
+  host: <%= creds['host'] %>
+  username: <%= creds['username'] %>
+  password: <%= creds['password'] %>
+  database: <%= creds['database'] %>
+  pool: <%= creds['pool'] || 5  %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

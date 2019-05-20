@@ -1,0 +1,172 @@
+grammar Logic
+  rule root
+    and_conjunction | operators    
+  end
+
+  rule and_conjunction
+    (operators opand term:(and_conjunction | operators)) {
+      def lhs
+        capture(:operators).value
+      end
+      def rhs
+        capture(:term).value
+      end
+      def value
+        lhs && rhs
+      end
+    }
+  end
+
+  rule logical
+    equality | inequality | boolean_equality | string_equality | greater | less | less_or_equal | greater_or_equal | contains
+  end
+
+  rule greater
+    (number gt term:(number)){
+      capture(:number).value > capture(:term).value
+    }
+  end
+
+  rule less
+    (number ls term:(number)){
+      capture(:number).value < capture(:term).value
+    }
+  end
+
+  rule less_or_equal
+    (number le term:(number)){
+      capture(:number).value <= capture(:term).value
+    }
+  end
+
+  rule greater_or_equal
+    (number gte term:(number)){
+      capture(:number).value >= capture(:term).value
+    }
+  end
+
+  rule equality
+    (number equal term:(number)){
+      capture(:number).value == capture(:term).value
+    }
+  end
+
+  rule inequality
+    (number inequal term:(number)){
+      capture(:number).value != capture(:term).value
+    }
+  end
+
+  rule boolean_equality
+    (boolean equal term:(boolean)) {
+      def to_bool(val)
+        val.strip == 'true' ? true : false
+      end
+      def value
+        to_bool(capture(:boolean).value) == to_bool(capture(:term).value)
+      end
+    }
+  end
+
+  rule string_equality
+    (string equal term:(string)) {
+      capture(:string).value.strip == capture(:term).value.strip
+    }
+  end
+
+  rule number
+    ([0-9.]+ space) {
+      to_str.to_i
+    }
+  end
+
+  rule boolean
+    (("true" | "false") space)
+  end
+
+  rule string
+    (quote [a-zA-Z]+ quote) {
+      to_str
+    }
+  end
+
+  rule contains
+    (string in list) {
+      capture(:list).value.strip[1..-2].split(" ").map{|s| s[1..-2]}.include?(capture(:string).value.strip[1..-2])
+    }
+  end
+
+  rule list
+    left_bracket string* right_bracket
+  end
+
+  rule quote
+    '"' space
+  end
+
+  rule lparen
+    '(' space
+  end
+  
+  rule rparen
+    ')' space
+  end
+
+  rule operators
+    group | logical
+  end
+
+  rule group
+    (lparen logical rparen) {
+      capture(:logical).value
+    }
+  end
+
+  rule opand
+    'AND' space
+  end
+
+  rule plus
+    '+' space
+  end
+
+  rule equal
+    '==' space
+  end
+
+  rule inequal
+    '!=' space
+  end
+
+  rule gt
+    '>' space
+  end
+
+  rule gte
+    '>=' space
+  end
+
+  rule ls
+    '<' space
+  end
+
+  rule le
+    '<=' space
+  end
+
+  rule in
+    'in' space
+  end
+
+  rule left_bracket
+    "[" space
+  end
+
+  rule right_bracket
+    "]" space
+  end
+
+  rule space
+    [ \t]*
+  end
+end
