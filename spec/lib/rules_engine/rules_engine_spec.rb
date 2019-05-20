@@ -1,6 +1,3 @@
-require 'rspec'
-require 'rails_helper'
-
 describe RulesEngine do
 
   let(:lead) {

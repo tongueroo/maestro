@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe 'Maestro Evaluator' do
 
   let(:lead) {
