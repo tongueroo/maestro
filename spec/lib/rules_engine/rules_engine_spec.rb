@@ -2,21 +2,11 @@ require 'rspec'
 require 'rails_helper'
 
 describe RulesEngine do
-  let(:first_name)    { 'Jane' }
-  let(:last_name)     { 'Doe' }
-  let(:lead_address)  { '123 washington' }
-  let(:lead_city)     { 'seattle' }
-  let(:lead_state)    { 'washington' }
-  let(:lead_zip)      { '98004' }
-  let(:lead_phone)    { '8586515050' }
-  let(:lead_email)    { 'test@example.com' }
-  let(:lead_dob)      { Date.parse('1992-01-01') }
-  let(:lead_ip)       { '127.0.0.1' }
-  let(:lead_weight)      { 150 }
 
-  let(:individual) { build(:individual, address: lead_address, email: lead_email, city: lead_city, state: lead_state, zip: lead_zip, phone: lead_phone, birth_date: lead_dob, weight: lead_weight) }
-  let(:lead) { build(:lead, phone: lead_phone, ip: lead_ip, tcpa_accepted: true, individual: individual) }
-
+  let(:lead) {
+    lead_hash = { 'first_name' => 'Jane', 'last_name' => 'Doe', 'city' => 'seattle', 'state' => 'WA', 'zip' => '98004', 'age' => 30, 'weight' => 150, 'tcpa_accepted' => true }
+    JSON.parse(lead_hash.to_json, object_class: OpenStruct)
+  }
 
   context 'basic rules' do
 
